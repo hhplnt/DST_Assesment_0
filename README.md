@@ -10,7 +10,7 @@ Equal Equity
 ## Reading Order
 
 *report/
- - 01-Report.rnd
+ - 01-Report.md
 
 Group project for DST.
 
