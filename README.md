@@ -2,8 +2,8 @@
 
 ## Project Group
 
-Hannah Harrison
-hhplnt
+* Hannah Harrison
+* hhplnt
 
 Equal Equity
 
