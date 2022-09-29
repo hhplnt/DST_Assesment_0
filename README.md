@@ -1,2 +1,19 @@
-# DST_Assesment_0
+# DST Assesment 0
+
+## Project Group
+
+Hannah Harrison
+hhplnt
+
+Equal Equity
+
+## Reading Order
+
+*report/
+ - 01-Report.rnd
+
 Group project for DST.
+
+## Description
+
+A group project for DST.
