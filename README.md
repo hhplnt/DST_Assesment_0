@@ -1,19 +1,21 @@
 # DST Assesment 0
 
+## Description
+
+An introductory project to gain experience with collaborative coding using Github. Produced for Data Science Toolbox at the University of Bristol.
+
 ## Project Group
 
 * Hannah Harrison
-* hhplnt
+* 
+*
 
-Equal Equity
+Equity split equally between group members.
 
 ## Reading Order
 
 *report/
  - 01-Report.md
 
-Group project for DST.
 
-## Description
 
-A group project for DST.
