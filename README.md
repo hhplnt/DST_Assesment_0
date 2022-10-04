@@ -17,6 +17,5 @@ Equity split equally between group members.
 *report/
  - 01-Report.md
 
-Group project for DST.
 
 
