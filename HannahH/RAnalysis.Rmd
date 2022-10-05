@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Requirements
+## Requirements
 ```{r}
 if (!require("fs")) install.packages("fs")
 library("fs") #for creating data path
@@ -38,6 +38,8 @@ library("tidyr") #for drop.na
 *Data source* Conn -- bro log data from secrepo. It contains general information regarding TCP, UDP, and ICMP traffic.
 
 *Data source* CTU-13 -- dataset of botnet traffic that was captured in the CTU University, Czech Republic. The CTU-13 dataset consists of thirteen captures of different botnet samples and I have chosen just one to analyse. In this scenario, a botnet called Neris was used. 
+
+
 
 ##Obtaining the Data 
 
@@ -131,7 +133,7 @@ ggplot(conndata2, aes(x = proto, fill = proto)) +
 ```
 
 
-We can explore how the protocol interacts with the other variables in the dataset. 
+Let's explore how protocol interacts with the other variables in the dataset. 
 
 ## Categorical data
 
