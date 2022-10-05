@@ -1,0 +1,362 @@
+---
+title: "DS Assessment 0"
+author: "Hannah Harrison"
+date: "2022-10-04"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Requirements
+```{r}
+if (!require("fs")) install.packages("fs")
+library("fs") #for creating data path
+library("knitr") #for kable
+if (!require("ggplot2")) install.packages("ggplot2")
+library("ggplot2")
+if (!require("superheat")) install.packages("superheat")
+library("superheat")
+
+#ggradar package in not available on CRAN, so we have to install it from Github.
+install.packages("devtools")
+devtools::install_github("ricardo-bion/ggradar")
+library(ggradar)
+
+if (!require("scales")) install.packages("scales")
+library(scales)
+if (!require("dplyr")) install.packages("dplyr")
+library(dplyr)
+if (!require("tidyr")) install.packages("tidyr")                        
+library("tidyr") #for drop.na
+
+```
+
+#1. Introduction
+
+*Data source* Conn -- bro log data from secrepo. It contains general information regarding TCP, UDP, and ICMP traffic.
+
+*Data source* CTU-13 -- dataset of botnet traffic that was captured in the CTU University, Czech Republic. The CTU-13 dataset consists of thirteen captures of different botnet samples and I have chosen just one to analyse. In this scenario, a botnet called Neris was used. 
+
+##Obtaining the Data 
+
+Creating a path for the data.
+```{r}
+rawdatadir=path_wd("..","data")
+if(!dir.exists(rawdatadir)) dir.create(rawdatadir,recursive = TRUE)
+```
+
+Downloading the Conn data 
+
+```{r}
+download.file("https://github.com/dsbristol/dst/raw/master/data/conn_sample.log",path_wd("..","data","conn_sample.log"))
+```
+
+
+Reading in the Conn data
+```{r}
+conndata=read.table(path_wd("..","data","conn_sample.log"),
+                    as.is=TRUE)
+```
+
+Assign column names
+
+```{r}
+colnames(conndata)=c('ts','uid','id.orig_h','id.orig_p',
+    'id.resp_h','id.resp_p','proto','service','duration',
+    'orig_bytes','resp_bytes','conn_state','local_orig',
+    'missed_bytes','history','orig_pkts','orig_ip_bytes',
+    'resp_pkts','resp_ip_bytes','tunnel_parents')
+```
+
+
+Make a version of the data that uses only the top 20 most frequently used ports
+
+```{r}
+topports=names(head(sort(table(conndata[,"id.resp_p"]),decreasing=TRUE),20))
+conndata2=conndata[conndata[,"id.resp_p"]%in%topports,]
+```
+
+
+Downloading the CTU-13 data
+```{r}
+url <- "https://mcfp.felk.cvut.cz/publicDatasets/CTU-Malware-Capture-Botnet-42/detailed-bidirectional-flow-labels/capture20110810.binetflow"
+download.file(url ,path_wd("..","data","capture20110810.binetflow"))
+```
+
+Reading in the data and selecting the first 20,000 rows as a sample, as the dataset is large.
+
+```{r}
+bitnetflow=read.table("..\\data\\raw\\capture20110810.binetflow",sep=",", header=T)
+bitnetflow = bitnetflow[1:20000,]
+```
+
+
+#2. Conndata 
+
+## Exploration
+
+The project information led us first to the bro logs data and so I look at this first. 
+
+View the data; to get an impression of what the data looks like, and in doing so check that I have correctly imported the data, I use the head command in order to get a snapshot of the first few terms of our dataframe.
+
+```{r}
+head(conndata2)
+```
+
+I can already see some missing values, and some columns containing no data at all. The data contains observations of 20 variables and it is helpful to use summary to view the data types.
+
+```{r}
+summary(conndata2)
+```
+
+Some variables seems to be character strings when they ought to be numeric, so I correct that here.
+
+```{r}
+#Preprocessing the data 
+conndata2$duration = as.numeric(conndata2$duration)
+conndata2$orig_bytes = as.numeric(conndata2$orig_bytes)
+conndata2$resp_bytes = as.numeric(conndata2$resp_bytes)
+```
+We get a warning that NAs were introduced due to the missing data values.
+
+## Data Visusualisation 
+
+We can visualise the counts of the protocols used with a bar plot. I produced this using the ggplot2 package. We can see that by far, the most commonly used protocol is TCP, which is as expected due to its wide usage.
+
+```{r}
+ggplot(conndata2, aes(x = proto, fill = proto)) +
+  geom_bar()
+```
+
+
+We can explore how the protocol interacts with the other variables in the dataset. 
+
+## Categorical data
+
+I decided to first look at the interaction between protocol and service, as is done in the example assessment 0.
+
+```{r}
+## Making a cyber table
+cyber=table(conndata2[,c("proto","service")])
+kable(cyber)
+```
+
+Here the relative importance of each service by protocol is plotted in a barplot.
+```{r}
+par(mfrow=c(1,3))
+for(i in 1:dim(cyber)[1]) barplot(sort(cyber[i,],decreasing=TRUE),
+                                  main=rownames(cyber)[i],offset=0.1,
+        log="y",col=rainbow(10),las=2)
+
+```
+
+In the above we can see that the missing service data dominates the other categories.
+
+We can also visualise these data using heatmaps, and there are a variety of packages in R to create these.
+One such is the superheat package and another the gplots package.
+
+```{r}
+superheat(log(1+cyber))
+library("gplots")
+#png("../media/02_EDA_heatmap2.png",height=500,width=800)
+heatmap.2(log(1+cyber),margins =c(9,15),trace="none")
+```
+Here we can see both packages produce similar plots and the differences are mostly stylistic. Again we can clearly see the issue with missingness, especially for icmp.
+
+## Radar Charts
+
+We can display multiple quantative variables for categories of data using a radar plot. I will produce one grouping the data by protocol. This code is based on the versions on datanovia and datavis github given in the references.
+
+The data first needs to be prepared.
+```{r}
+
+plotdata <- conndata2 %>%
+  select(proto, duration, orig_bytes,
+    missed_bytes ,orig_pkts, resp_pkts, resp_bytes) %>%
+  rename(group = proto) %>%
+  drop_na() 
+
+udpdata <- plotdata %>%
+  filter(group == 'udp') 
+udpdata2 = colMeans(udpdata[,c('duration', 'orig_bytes',
+    'missed_bytes' ,'orig_pkts', 'resp_bytes', 'resp_pkts')])
+
+tcpdata <- plotdata %>%
+  filter(group == 'tcp')  
+tcpdata2 = colMeans(tcpdata[,c('duration', 'orig_bytes',
+    'missed_bytes' ,'orig_pkts', 'resp_bytes', 'resp_pkts')])
+
+icmpdata <- plotdata %>%
+  filter(group == 'icmp')  
+icmpdata2 = colMeans(icmpdata[,c('duration', 'orig_bytes',
+    'missed_bytes' ,'orig_pkts', 'resp_bytes', 'resp_pkts')])
+
+plotdata2 <- cbind.data.frame(group = c('udp','tcp', 'icmp'),rbind(udpdata2, tcpdata2, icmpdata2)) %>%
+  mutate_at(vars(-group),
+            funs(rescale))
+plotdata2
+
+
+```
+I chose to just drop the NAs for simplicity and I  calculated column means so that we have a single average value to compare for each category. The mutate is used to rescale all variables apart from group so that the values are relative to eachother.
+
+The radar plot can now be generated.
+```{r}
+ggradar(plotdata2, 
+        grid.label.size = 4,
+        axis.label.size = 4, 
+        group.point.size = 5,
+        group.line.width = 1.5,
+        legend.text.size= 10) +
+  labs(title = "Protocol on variables in Conndata")
+```
+It is also possible to place charts for each category separately.
+
+```{r}
+
+ggradar(plotdata2[1, ], 
+        grid.label.size = 4,
+        axis.label.size = 4, 
+        group.point.size = 5,
+        group.line.width = 1.5,
+        legend.text.size= 10) +
+   labs(title = 'UDP')
+
+ggradar(plotdata2[2, ], 
+        grid.label.size = 4,
+        axis.label.size = 4, 
+        group.point.size = 5,
+        group.line.width = 1.5,
+        legend.text.size= 10) +
+   labs(title = 'TCP')
+
+ggradar(plotdata2[3, ], 
+        grid.label.size = 4,
+        axis.label.size = 4, 
+        group.point.size = 5,
+        group.line.width = 1.5,
+        legend.text.size= 10) +
+   labs(title = 'ICMP')
+```
+
+
+From the radar plots, we can see that, on average, udp sessions are the longest, followed by icmp. There seems to be no difference in the number of missing bytes between protocols, however we can see that the originator and responder number of packets and size of payloads (orig_bytes) does appear to vary with protocol.
+
+
+# 3. CTU-13 
+
+This dataset is similar in structure to the conndata, as it contains information such as duration, protocol, payload size, sources and destinations.
+
+```{r}
+head(bitnetflow)
+summary(bitnetflow)
+```
+Again, using a bar plot, we can investigate the proportions of protocols observed. Interestingly, this dataset contains observations of many more protocols, and this time udp is the most common. 
+
+```{r}
+ggplot(bitnetflow, aes(x = Proto, fill = Proto)) +
+  geom_bar()
+```
+
+Do we see the similar trends with protocol on the other variables in this dataset? 
+
+```{r}
+
+bitplotdata <- bitnetflow %>%
+  select(Proto, Dur, SrcBytes, TotPkts, TotBytes) %>%
+  rename(group = Proto) %>%
+  drop_na() 
+
+udpdata <- bitplotdata %>%
+  filter(group == 'udp') 
+udpdata2 = colMeans(udpdata[,c('Dur', 'SrcBytes', 'TotPkts', 'TotBytes')])
+
+tcpdata <- bitplotdata %>%
+  filter(group == 'tcp') 
+tcpdata2 = colMeans(tcpdata[,c('Dur', 'SrcBytes', 'TotPkts', 'TotBytes')])
+
+icmpdata <- bitplotdata %>%
+  filter(group == 'icmp') 
+icmpdata2 = colMeans(icmpdata[,c('Dur', 'SrcBytes', 'TotPkts', 'TotBytes')])
+
+bitplotdata2 <- cbind.data.frame(group = c('udp','tcp', 'icmp'),rbind(udpdata2, tcpdata2, icmpdata2)) %>%
+  mutate_at(vars(-group),
+            funs(rescale))
+
+ggradar(bitplotdata2, 
+        grid.label.size = 4,
+        axis.label.size = 4, 
+        group.point.size = 5,
+        group.line.width = 1.5,
+        legend.text.size= 10) +
+  labs(title = "Protocol on variables in CTU-13")
+
+```
+Indeed, again we see that TCP on average corresponds to events with larger payload size and packet number, and udp events have the longest average duration.
+
+
+## Graphs
+
+Through our research, we saw that a challenge within the cybersecurity field was finding ways to visualise network data as a graph. 
+
+I was first attracted to the LANL authentication data to visualise a graph, as this dataset simply contained source, destination and time. However, this turned out to be huge, presenting significant challenges for downloading and reading in the data. Instead we use the CTU-13 data.
+
+I attempt to make a graph of source and destination ports using igraph, emulating the code on https://kateto.net/network-visualization.
+
+First, as usual, we need to make the network data easier to manage and get the data into the correct form. Lets consider only instances in which the protocol was icmp. 
+
+I originally tried to use the full dataset but there was an enormous number of nodes; using just the ports associated with icmp events reduced this to just 133 nodes.
+
+```{r}
+rtpdata <- bitnetflow %>% 
+  filter(Proto == 'rtp')
+portdf <- rtpdata[, c("Sport","Dport")]%>%
+  drop_na()
+
+head(portdf)
+edges = portdf
+nodes = unique(c(rtpdata$Sport,rtpdata$Dport), na.rm = TRUE)
+nodes
+length(nodes)
+
+```
+Next, I create an igraph object.
+
+```{r}
+library('igraph')
+net <- graph_from_data_frame(d=edges, vertices=nodes, directed=TRUE) 
+net
+```
+
+
+```{r}
+plot(net, vertex.shape="none", 
+     vertex.label.font=2, vertex.label.color="gray40",
+     vertex.label.cex=.7, edge.color="gray85")
+```
+This visualization doesn't show much, as all connections are towards port 13363, however it was an intereting experience using igraph.
+
+
+
+
+
+# References
+
+Conn data: http://www.secrepo.com/Datasets%20Description/HTML_Bro_log_1/conn.html
+
+CTU-13 data: https://www.stratosphereips.org/datasets-ctu13
+
+Example project: https://github.com/dsbristol/dst_example_project/blob/master/report/02-R_analysis.Rmd
+
+Visualisations: 
+
+Datavis github - https://rkabacoff.github.io/datavis/Other.html
+
+Datanovia - https://www.datanovia.com/en/blog/beautiful-radar-chart-in-r-using-fmsb-and-ggplot-packages/
+
+Igraph code - https://kateto.net/network-visualization
+
+
+
