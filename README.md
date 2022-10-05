@@ -14,8 +14,26 @@ Equity split equally between group members.
 
 ## Reading Order
 
-*report/
- - 01-Report.md
+All report content is in the directory:
+
+* Report/
+
+The report is structured as follows:
+* 01-Introduction.Rmd
+* 02-Ranalysis.Rmd
+* 03-
+* 04-
+* 05-Conclusion.Rmd
+
+## Requirements
+
+Requirements for the Rmd files are given within each script.
+
+## Evidence
+
+## Reflections
+
+
 
 
 
