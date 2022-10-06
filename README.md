@@ -7,7 +7,7 @@ An introductory project to gain experience with collaborative coding using Githu
 ## Project Group
 
 * Hannah Harrison
-* 
+* Ziyuan Jiang
 *
 
 Equity split equally between group members.
