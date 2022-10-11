@@ -16,12 +16,10 @@ In particular, we were asked to investigate the following questions:
 * What are the main types of resource?
 * What type of problems can the resources solve?
 * Are there any generic data science resources that might be applicable? In what sense are they applicable?
-* How might the approach be compared to other approaches, and/or applied across different datasets?
 * How is the experience of sharing code via GitHub limiting, and/or enabling?
 
+We chose to explore these ideas through the implemetation a variety of visualisation techniques to expand on the main topic of our first block of lectures. 
 
-## The Team 
-
-This is a 3 person team,
+This is a 3 person team; Hannah, Hailey and Jiang. Hannah and Hailey have previous experience programming in R, whereas Jiang has previous experience in Python. Due to the short time for the project we decided to stick to these languages and divide the work accordingly.
 
 
