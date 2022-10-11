@@ -8,7 +8,7 @@ An introductory project to gain experience with collaborative coding using Githu
 
 * Hannah Harrison
 * Ziyuan Jiang
-*
+* 
 
 Equity split equally between group members.
 
@@ -21,8 +21,8 @@ All report content is in the directory:
 The report is structured as follows:
 * 01-Introduction.Rmd
 * 02-Ranalysis.Rmd
-* 03-
-* 04-
+* 03- ...
+* 04- ...
 * 05-Conclusion.Rmd
 
 ## Requirements
@@ -31,9 +31,17 @@ Requirements for the Rmd files are given within each script.
 
 ## Evidence
 
+Our working is shown in our own directories,
+
+HannahH/RAnalysis.Rmd
+...
+...
+
+Hannah and Hailey wrote the first and second R analyses respectively, Jiang wrote the Python analysis, and we wrote the conclusion together.
+
 ## Reflections
 
-
+Reflections will be uploaded individually via the blackboard submission point.
 
 
 
