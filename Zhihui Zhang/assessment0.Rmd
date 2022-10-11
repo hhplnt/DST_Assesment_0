@@ -1,0 +1,259 @@
+---
+title: "assessment0"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+In this assessment, I use the KDD Cup 1999 Data which contains a standard set of data to be audited, which includes a wide variety of intrusions simulated in a military network environment. According to the task description, all attacks and intrusions are classified into four categories. I explore the relationship between some features and the attack type.
+
+I use explore more about the dataset bro logs MACCDC2012 by Security Repo,which contains some basic feature of connections. More specifically, I compare the data among dhcp,ssh and smtp.
+
+
+
+## 1.1: Get the data source and read the data 
+```{r}
+#set my working directory
+setwd("~/Desktop")
+#read the data which I downloaded before
+kddata<-read.csv("kddcup.data_10_percent")
+#get the column name 
+library(caret)
+url <- "http://kdd.ics.uci.edu/databases/kddcup99/kddcup.names"
+req <- "kddcup.names"
+if(file.access(req)){
+  download.file(url,req)
+}
+#split,skip rows,not as factor
+kddnames=read.table("kddcup.names",sep=":",skip=1,as.is=T)
+#add a column name called "normal"
+colnames(kddata)=c(kddnames[,1],"normal")
+```
+
+##1.2 preprocess the data
+```{r}
+kddata$duration = as.numeric(as.character(kddata$duration))
+kddata$protocol_type = factor(kddata$protocol_type)
+kddata$service = factor(kddata$service)
+kddata$flag = factor(kddata$flag)
+kddata$src_bytes = as.numeric(as.character(kddata$src_bytes))
+kddata$dst_bytes = as.numeric(as.character(kddata$dst_bytes))
+kddata$land = factor(kddata$land)
+kddata$wrong_fragment = as.numeric(as.character(kddata$wrong_fragment))
+kddata$urgent = as.numeric(as.character(kddata$urgent))
+kddata$hot = as.numeric(as.character(kddata$hot))
+kddata$num_failed_logins = as.numeric(as.character(kddata$num_failed_logins))
+kddata$logged_in = factor(kddata$logged_in)
+kddata$num_compromised = as.numeric(as.character(kddata$num_compromised))
+kddata$root_shell = factor(kddata$root_shell)
+kddata$su_attempted = factor(kddata$su_attempted)
+kddata$num_root = as.numeric(as.character(kddata$num_root))
+kddata$num_file_creations = as.numeric(as.character(kddata$num_file_creations))
+kddata$num_shells = as.numeric(as.character(kddata$num_shells))
+kddata$num_access_files = as.numeric(as.character(kddata$num_access_files))
+kddata$num_outbound_cmds = as.numeric(as.character(kddata$num_outbound_cmds))
+kddata$is_hot_login = factor(kddata$is_hot_login)
+kddata$is_guest_login = factor(kddata$is_guest_login)
+kddata$count = as.numeric(as.character(kddata$count))
+kddata$srv_count = as.numeric(as.character(kddata$srv_count))
+kddata$serror_rate = as.numeric(as.character(kddata$serror_rate))
+kddata$srv_serror_rate = as.numeric(as.character(kddata$srv_serror_rate))
+kddata$rerror_rate = as.numeric(as.character(kddata$rerror_rate))
+kddata$srv_rerror_rate = as.numeric(as.character(kddata$srv_rerror_rate))
+kddata$same_srv_rate = as.numeric(as.character(kddata$same_srv_rate))
+kddata$diff_srv_rate = as.numeric(as.character(kddata$diff_srv_rate))
+kddata$srv_diff_host_rate = as.numeric(as.character(kddata$srv_diff_host_rate))
+kddata$dst_host_count = as.numeric(as.character(kddata$dst_host_count))
+kddata$dst_host_srv_count = as.numeric(as.character(kddata$dst_host_srv_count))
+kddata$dst_host_same_srv_rate = as.numeric(as.character(kddata$dst_host_same_srv_rate))
+kddata$dst_host_diff_srv_rate = as.numeric(as.character(kddata$dst_host_diff_srv_rate))
+kddata$dst_host_same_src_port_rate = as.numeric(as.character(kddata$dst_host_same_src_port_rate))
+kddata$dst_host_srv_diff_host_rate = as.numeric(as.character(kddata$dst_host_srv_diff_host_rate))
+kddata$dst_host_serror_rate = as.numeric(as.character(kddata$dst_host_serror_rate))
+kddata$dst_host_srv_serror_rate = as.numeric(as.character(kddata$dst_host_srv_serror_rate))
+kddata$dst_host_rerror_rate = as.numeric(as.character(kddata$dst_host_rerror_rate))
+kddata$dst_host_srv_rerror_rate = as.numeric(as.character(kddata$dst_host_srv_rerror_rate))
+
+```
+
+According to the task description, the attacks can be classified into four categories, which is "probe","u2r","dos","r2l".Hence, I made following process to data.
+
+```{r}
+#classify the attack into 4 groups
+kddata$normal = as.character(kddata$normal)
+kddata$normal[kddata$normal == "ipsweep."] = "probe"
+kddata$normal[kddata$normal == "portsweep."] = "probe"
+kddata$normal[kddata$normal == "nmap."] = "probe"
+kddata$normal[kddata$normal == "satan."] = "probe"
+kddata$normal[kddata$normal == "buffer_overflow."] = "u2r"
+kddata$normal[kddata$normal == "loadmodule."] = "u2r"
+kddata$normal[kddata$normal == "perl."] = "u2r"
+kddata$normal[kddata$normal == "rootkit."] = "u2r"
+kddata$normal[kddata$normal == "back."] = "dos"
+kddata$normal[kddata$normal == "land."] = "dos"
+kddata$normal[kddata$normal == "neptune."] = "dos"
+kddata$normal[kddata$normal == "pod."] = "dos"
+kddata$normal[kddata$normal == "smurf."] = "dos"
+kddata$normal[kddata$normal == "teardrop."] = "dos"
+kddata$normal[kddata$normal == "ftp_write."] = "r2l"
+kddata$normal[kddata$normal == "guess_passwd."] = "r2l"
+kddata$normal[kddata$normal == "imap."] = "r2l"
+kddata$normal[kddata$normal == "multihop."] = "r2l"
+kddata$normal[kddata$normal == "phf."] = "r2l"
+kddata$normal[kddata$normal == "spy."] = "r2l"
+kddata$normal[kddata$normal == "warezclient."] = "r2l"
+kddata$normal[kddata$normal == "warezmaster."] = "r2l"
+kddata$normal[kddata$normal == "normal."] = "normal"
+kddata$normal = as.factor(kddata$normal)
+
+```
+
+The connection status are recognized as normal or other error types based on the flag. So I divided the data into two categories.
+
+```{r}
+kddata_sf<-subset(kddata, kddata$flag == "SF")
+kddata_unsf<-subset(kddata, kddata$flag != "SF")
+```
+
+
+## 1.3 data analysis
+
+
+
+I get the scatter plot matrix for the continuous feature 
+```{r}
+kddata_sf<-subset(kddata, kddata$flag == "SF")
+kddata_unsf<-subset(kddata, kddata$flag != "SF")
+```
+
+
+```{r}
+pairs(~duration+src_bytes+dst_bytes+wrong_fragment+urgent,data = kddata_unsf, main = "Scatterplot Matrix")
+```
+We can see there exists some missing value in the dataset.There might exists some correlation between "duration" and other features as it distributed among some specific ranges. 
+
+```{r}
+library(ggplot2)
+qplot(duration,src_bytes,colour=normal,data=kddata_unsf)
+```
+From the scatterplot above, I suggest duration can be a good predictor as some relationship exists like normal range is between 7000s and 16000s and for duration is larger than 30000s, the attack types are all "probe".
+
+```{r}
+boxplot(duration ~ normal, data = kddata_unsf, xlab = "attack type",
+   ylab = "duration time", main = "duration time for each data type")
+
+
+```
+Also there exists big differences between each attack type. 
+
+
+```{r}
+#png(file = "Protocols_Frequency.png")
+op <- par(mfrow = c(1, 2))
+plot(~protocol_type,data=kddata,
+     xlab="protocol type", ylab = "frequency", main = "Protocols Frequency",col=rainbow(3))
+plot(~protocol_type,data=kddata_unsf,
+     xlab="protocol type", ylab = "frequency", main = "Protocols Frequency for unsafe connection",col=rainbow(3))
+par(op)
+```
+
+The histogram shows the unsafe connections all occur when transport through tcp while icmp and udp protocols are more safe.
+
+```{r}
+library("knitr")
+cyber=table(kddata[,c("protocol_type","service")])
+kable(cyber,)
+
+barplot(t(cyber),legend=colnames(cyber),col=rainbow(66),
+        args.legend=list(x="topright"))
+```
+
+
+##2.1 Read the data
+
+```{r}
+#set my working directory as 
+setwd("~/Desktop")
+dhcp<-read.csv("dhcp.csv")
+ 
+```
+
+##2.2 draw network graph
+```{r}
+#form a data frame contains the souce,destination and the number of connections between two ports
+sou_des<-paste(dhcp$id.orig_h,dhcp$id.resp_h)
+sou_des_amount<-as.data.frame(table(sou_des))
+sou_des_amount_1<-str_split_fixed(sou_des_amount$sou_des, " ", 2)
+sou_des_amount_2<-as.data.frame(cbind(sou_des_amount_1,sou_des_amount$Freq))
+colnames(sou_des_amount_2)<-c("source","destination","frequency")
+
+#draw the network graph for dhcp
+library(tidyverse)
+name<-data.frame(c(sou_des_amount_2$source,sou_des_amount_2$destination))
+nodes<-name%>%
+  distinct()
+edges<-sou_des_amount_2%>%
+  rename(from=source,to=destination,weight=frequency)
+library(igraph)
+net_pc<-graph_from_data_frame(
+  d=edges,vertices=nodes,
+  directed=TRUE)
+```
+
+With the frequency table, I can find the the most frequently connected source and destination ports.The network made the connection more intuitive and visualized.
+
+##2.3 timestamp analysis
+```{r}
+#ts
+#Create data frame of dhcp's timestamp 
+number<-c(1:nrow(dhcp))
+time<-dhcp$ts
+class<-rep("dhcp",nrow(dhcp))
+dhcptime<-data.frame(number,time,class)
+
+#Create data frame of smtp's timestamp 
+number<-c(1:nrow(smtp))
+time<-smtp$ts
+class<-rep("smtp",nrow(smtp))
+smtptime<-data.frame(number,time,class)
+
+#Create data frame of ssh's timestamp 
+number<-c(1:nrow(ssh))
+time<-ssh$ts
+class<-rep("ssh",nrow(ssh))
+sshtime<-data.frame(number,time,class)
+
+#Merge the above data frame
+totaltime<-rbind(dhcptime,smtptime,sshtime)
+#Scatterplot
+ggplot(totaltime,aes(x=time,y=number,colour=class)) +geom_point() +ggtitle("Various data's timestamp") +theme(plot.title=element_text(hjust = 0.5))
+
+```
+The y axis stands for the frequency of each protocols. We can see ssh is more commonly used among these three categories.The timestamp is more continuous for dtcp, while for smtp and ssh, the occurence for connection are more random and scattered.
+
+```{r}
+dhcptime<-dhcptime[order(dhcptime$time),]
+n <- nrow(dhcptime)
+j <- 1
+i <- 1
+c <- vector(length = n-1)
+while( j<= n-1 & i <= n-1) {
+  c[j] <- as.numeric(as.numeric(dhcptime$time[i+1]) - as.numeric(dhcptime$time[i]))
+  j <- j+1 
+  i <- i+1}
+
+barplot(c, width = 5, space = NULL,ylim=c(0,300),
+         main = "Timelapse between occurences") 
+
+```
+There is no obvious periodical request for dhcp according to this barplot.
+
+## References
+http://www.secrepo.com/
+http://kdd.ics.uci.edu/databases/kddcup99/kddcup99.html
+https://github.com/dsbristol/Data-Science-Toolbox-Assessment-0/blob/main/Xiao%20Zhang/Assessment0_Xiao.Rmd
+http://gauss.ececs.uc.edu/Courses/c6055/pdf/bro_log_vars.pdf
+
