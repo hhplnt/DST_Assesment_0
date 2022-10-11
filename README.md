@@ -8,7 +8,7 @@ An introductory project to gain experience with collaborative coding using Githu
 
 * Hannah Harrison
 * Ziyuan Jiang
-* 
+* Zhihui Zhang
 
 Equity split equally between group members.
 
