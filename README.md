@@ -35,7 +35,7 @@ Our working is shown in our own directories,
 
 * HannahH/RAnalysis.Rmd
 * Jiang/Python_Analysis.ipynb
-* ...
+* ZhihuiZHANG/Assessment0.rmd
 
 Hannah and Hailey wrote the first and second R analyses respectively, Jiang wrote the Python analysis, and we wrote the conclusion together.
 
