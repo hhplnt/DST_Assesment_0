@@ -7,9 +7,14 @@ In this project we have been able to explore and visualise multiple new datasets
 1. To give you experience with the assessment used
 * oppurtunity to look through examples in detail
 
-From the data sources provided by assessment, we have identified a number of sources where cyber security related data is available. These sources allow us to analyse different types of cyber security data, and in this assessment we have used some of the data from data sources.
+From the lectures we get a first insight into the main content of the course and some primary data analysis. From the workshop, we learned about Rstudio and how to write a document using markdown, and we learned how to use Github and we used it for the first time for teamwork.
+
+From the data sources provided by assessment, we have identified a number of sources where cyber security related data is available. These sources allow us to analyse different types of cyber security data, and in this assessment we have used some of the data from data sources. Finally, with assessment we get a first glimpse of cyber security data, such as the different data types.
+
 2. To enable you to explore collaborative working,
 * Learning to use github
+
+
 3. To give you additional experience with programming.
 * writing code
 * borrowing/adapting code from the internet
