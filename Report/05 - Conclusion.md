@@ -18,10 +18,20 @@ All three people in the group are using GitHub for the first time to collaborate
 
 3. To give you additional experience with programming.
 * writing code
+
+For python, pandas and numpy are used for the data analysed, and matplotlib is used for the drawing. python is powerful with these libraries and can produce satisfactory visualisations of the data.
+
 * borrowing/adapting code from the internet
+
+In some cases, we have had to borrow code from the internet for data processing processes that we were not familiar with. When borrowing some code from the web, sometimes this code needs some refinement to fit our data set. In the process it also deepened our impression of the unfamiliar code.
+
 * loading in big/ awkward data
+
+When first processing this data, we found that most of the cyber security datasets were quite large and in some cases importing all the data would cause the program to crash. So, we have also learned some ways to handle huge data sets, such as removing some unnecessary data or importing the data part by part.
+
 * transforming data
 
+Sometimes there is data in a dataset that we cannot use directly, for example, sometimes timestamps are processed as time intervals, or data is counted for each connection.
 
 ## Discussion of intended topics
 
