@@ -14,6 +14,7 @@ From the data sources provided by assessment, we have identified a number of sou
 2. To enable you to explore collaborative working,
 * Learning to use github
 
+All three people in the group are using GitHub for the first time to collaborate. We found some of the GitHub features ideal for collaboration, such as the ability to edit text in full using Markdown and the ability for many people to work under one project and see their respective progress. As well as working together online through GitHub, we also meet offline every week for a more productive exchange where we can share our views on the project.
 
 3. To give you additional experience with programming.
 * writing code
