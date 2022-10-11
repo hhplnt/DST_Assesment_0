@@ -22,7 +22,7 @@ The report is structured as follows:
 * 01-Introduction.Rmd
 * 02-Ranalysis.Rmd
 * 03-Python_Analysis.ipynb
-* 04- ...
+* 04-R_analysis.rmd
 * 05-Conclusion.Rmd
 
 ## Requirements
@@ -34,8 +34,8 @@ Requirements for the Rmd files are given within each script.
 Our working is shown in our own directories,
 
 * HannahH/RAnalysis.Rmd
-* Jiang/Python_Analysis.ipynb
-* ZhihuiZHANG/Assessment0.rmd
+* Ziyuan Jiang/Python_Analysis.ipynb
+* Zhihui Zhang/R_analysis.rmd
 
 Hannah and Hailey wrote the first and second R analyses respectively, Jiang wrote the Python analysis, and we wrote the conclusion together.
 
