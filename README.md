@@ -33,9 +33,9 @@ Requirements for the Rmd files are given within each script.
 
 Our working is shown in our own directories,
 
-HannahH/RAnalysis.Rmd
-Jiang/Python_Analysis.ipynb
-...
+* HannahH/RAnalysis.Rmd
+* Jiang/Python_Analysis.ipynb
+* ...
 
 Hannah and Hailey wrote the first and second R analyses respectively, Jiang wrote the Python analysis, and we wrote the conclusion together.
 
