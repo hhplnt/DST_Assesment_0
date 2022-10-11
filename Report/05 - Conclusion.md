@@ -36,17 +36,17 @@ Sometimes there is data in a dataset that we cannot use directly, for example, s
 ## Discussion of intended topics
 
 ### What are the broad types of data?
-* kdd, bro logs, 
+* KDD data which contains 42 variables including numerical, int and char data
+* bro logs dataset which contains each network connection including various data type like numerical, int and char.
+* We also found datasets focussed on classifying types of malware.
 
-We also found datasets focussed on classifying types of malware.
 
 ### What are the main types of resource and what type of problems can the resources solve?
-Most of the examples of code on cybersecurity data we found were on public github repositories, and we found that most of this was coded using Python. 
 
-* most code in python
-* other groups projects
-* github
-* anomaly detection, classification of malware, indicators of attacks, visualising networks  
+* Most of the examples of code on cybersecurity data we found were on public github repositories, and we found that most of this was coded using Python. 
+* Other groups projects can be found on github which is quite useful for us as a good inspiration to deal with dataset and do some visualization based on the knowledge we learned before.
+* github is useful for us to do collaborative coding.
+* Useful articles and dataset can be found online. By looking through them, we get more deep understanding about anomaly detection, classification of malware, indicators of attacks and visualising networks.  
 
 
 ### Are there any generic data science resources that might be applicable? In what sense are they applicable?
