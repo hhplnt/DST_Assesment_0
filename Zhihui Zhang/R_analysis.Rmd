@@ -170,6 +170,7 @@ kable(cyber,)
 barplot(t(cyber),legend=colnames(cyber),col=rainbow(66),
         args.legend=list(x="topright"))
 ```
+The graph demonstrates that icmp protocol is most frequently used. However, the tcp and udp are provided to more types of service.
 
 
 ##2.1 Read the data
