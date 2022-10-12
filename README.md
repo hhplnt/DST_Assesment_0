@@ -27,7 +27,7 @@ The report is structured as follows:
 
 ## Requirements
 
-Requirements for the Rmd files are given within each script.
+Requirements for the Rmd files are given within each script, as are the Python requirements.
 
 ## Evidence
 
